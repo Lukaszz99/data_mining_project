@@ -2,4 +2,4 @@
 Project for MED (Data Mining Methods) subject
 
 ### Sprawozdanie
-Sprawozdanie dostępne jest w sewisie Overleaf: [Sprawozdanie]{https://www.overleaf.com/read/nznbdrmpbykk}
+Sprawozdanie dostępne jest w sewisie Overleaf: https://www.overleaf.com/read/nznbdrmpbykk
