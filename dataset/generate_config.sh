@@ -10,7 +10,11 @@ read -r token
 echo "Type Access Token Secret"
 read -r secret_token
 
+echo "Type Bearer Token"
+read -r bearer_token
+
 echo "api_key: $api_key
 api_key_secret: $secret_key
 access_key: $token
-access_key_secret: $secret_token" >> access_config.yaml
+access_key_secret: $secret_token
+bearer_token: $b_token" >> access_config.yaml
