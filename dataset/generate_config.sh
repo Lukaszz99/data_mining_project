@@ -17,4 +17,4 @@ echo "api_key: $api_key
 api_key_secret: $secret_key
 access_key: $token
 access_key_secret: $secret_token
-bearer_token: $b_token" >> access_config.yaml
+bearer_token: $bearer_token" >> access_config.yaml
