@@ -15,6 +15,6 @@ read -r bearer_token
 
 echo "api_key: $api_key
 api_key_secret: $secret_key
-access_key: $token
-access_key_secret: $secret_token
+access_token: $token
+access_token_secret: $secret_token
 bearer_token: $bearer_token" >> access_config.yaml
