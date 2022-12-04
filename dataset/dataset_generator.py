@@ -21,7 +21,7 @@ def main(configfile_path, hashtag):
     # List of lists: [[start_time1, end_time1], [start_time2, end_time2], ...]
     time_windows = [['2022-11-28T00:00:00.000Z', '2022-11-28T23:59:59.000Z'],
                     ['2022-11-29T00:00:00.000Z', '2022-11-29T23:59:59.000Z'],
-                    ['2022-11-30T00:00:00.000Z', '2022-11-31T23:59:59.000Z']]
+                    ['2022-11-30T00:00:00.000Z', '2022-11-30T23:59:59.000Z']]
 
     query = f'#{hashtag} lang:en -is:retweet'
     for start_time, end_time in time_windows:
@@ -40,7 +40,10 @@ def main(configfile_path, hashtag):
                           columns=['author_id', 'created_at', 'lang', 'id', 'source', 'text']
                           )
 
-        df.to_csv(f"{hashtag}_{start_time.split('T')[0]}.csv", index=False)
+        df_file = f"{hashtag}_{start_time.split('T')[0]}.csv"
+        df.to_csv(df_file, index=False)
+
+        print(f"Saved {df_file}")
 
 
 if __name__ == '__main__':
