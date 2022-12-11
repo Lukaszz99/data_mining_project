@@ -161,7 +161,7 @@ cython_debug/
 
 # TU JUZ MY HEHE
 # ignorujemy zestawy danych
-.csv
+*.csv
 
 # ignorujemy wtgenerowany plik z dostepami
 access_config.yaml
