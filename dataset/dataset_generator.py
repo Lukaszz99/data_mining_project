@@ -31,6 +31,13 @@ def main(configfile_path, time_window_width):
     stop_words = set(stopwords.words('english'))
 
     def clean_text(x, st, sw):
+        """
+        Creates list of separate words from each input.
+        :param x: input sentence
+        :param st: SnowballStemmer instance
+        :param sw: stop words
+        :return:
+        """
         x = x.lower()
         x = re.sub('[^a-zA-Z]', ' ', x)
         x = ' '.join(st.stem(text) for text in x.split() if text not in sw)

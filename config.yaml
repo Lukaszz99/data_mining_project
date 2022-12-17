@@ -1,0 +1,6 @@
+dataset:
+  path: "dataset/sequences.json"
+
+gsp:
+  min_supp_norm: 0.5
+  log_level: 1

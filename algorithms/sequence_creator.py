@@ -25,4 +25,4 @@ def main(main_path, outfile):
 
 
 if __name__ == "__main__":
-    main(main_path="D:/MED/dataset", outfile="sequences.json")
+    main(main_path="/dataset", outfile="sequences.json")
