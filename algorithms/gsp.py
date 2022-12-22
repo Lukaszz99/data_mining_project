@@ -1,11 +1,13 @@
 import copy
 from operator import neg
+import json
 
 
 class GSP:
-    def __init__(self, dataset, log_level):
+    def __init__(self, dataset, log_level, output_file):
         self._dataset = dataset
         self._log_level = log_level
+        self._out = output_file
 
     def search(self, support_norm):
         patterns = []
@@ -25,7 +27,10 @@ class GSP:
         patterns.append(single_item_counts)
 
         if self._log_level > 0:
-            print('Result, lvl 1: ' + str(patterns[0]))
+            print('Result for lvl 1: Done')
+            with open(f"{self._out}/lvl1.json", 'w') as f:
+                json.dump(patterns[0], f, sort_keys=False, indent=4)
+            # print('Result, lvl 1: ' + str(patterns[0]))
 
         k = 1
         while patterns[k - 1]:
@@ -47,7 +52,10 @@ class GSP:
             result_lvl = [(i, count) for i, count in cands_counts if count >= min_sup]
 
             if self._log_level > 0:
-                print('Result, lvl ' + str(k + 1) + ': ' + str(result_lvl))
+                print('Result for lvl ' + str(k + 1) + ': Done')
+                with open(f"{self._out}/lvl{k+1}.json", 'w') as f:
+                    json.dump(result_lvl, f, sort_keys=False, indent=4)
+
                 if self._log_level > 1:
                     print('Candidates generated, lvl ' + str(k + 1) + ': ' + str(cands_gen))
                     print('Candidates pruned, lvl ' + str(k + 1) + ': ' + str(cands_pruned))

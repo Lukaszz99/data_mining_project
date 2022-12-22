@@ -2,5 +2,11 @@ dataset:
   path: "dataset/sequences.json"
 
 gsp:
-  min_supp_norm: 0.5
+  min_supp_norm: 0.75
   log_level: 1
+  max_seq: 25
+  max_transactions: 100
+  max_items: 100
+
+output:
+  out_directory: "output/run20"
