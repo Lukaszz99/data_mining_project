@@ -207,7 +207,7 @@ class SPADE:
         return supports, three_dict
 
 
-    def spade(self, df: pd.DataFrame, min_sup: int):
+    def spade(self, df: pd.DataFrame, min_sup: float):
         min_sup = min_sup * len(self._dataset)
 
         # (STEP 1): Find atoms and their support

@@ -1,12 +1,18 @@
 dataset:
   path: "dataset/sequences.json"
+  max_seq: 1500
+  max_transactions: 20
+  max_items: 100
 
 gsp:
   min_supp_norm: 0.4
   log_level: 1
-  max_seq: 1500
-  max_transactions: 20
-  max_items: 100
+
+spade:
+    min_supp_norm: 0.4
+
+type: 'gsp'
+#type: 'spade'
 
 output:
   out_directory: "output/run34"

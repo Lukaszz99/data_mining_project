@@ -1,6 +1,7 @@
 import json
 import yaml
 from algorithms.gsp import GSP
+from algorithms.spade import SPADE
 import os
 import sys
 from typing import List
@@ -99,8 +100,8 @@ def main():
     dataset = clean_dataset(dataset)
     describe_dataset(dataset)
 
-    dataset, tot_items = prepare_dataset(dataset, config['gsp']['max_seq'], config['gsp']['max_transactions'],
-                                         config['gsp']['max_items'])
+    dataset, tot_items = prepare_dataset(dataset, config['dataset']['max_seq'], config['dataset']['max_transactions'],
+                                         config['dataset']['max_items'])
 
     # dataset, token_dict = tokenize(dataset)
 
@@ -122,16 +123,33 @@ def main():
     with open(os.path.join(output_path, 'config.yaml'), 'w') as outfile:
         yaml.dump(config, outfile, default_flow_style=False)
 
-    s_ = time()
+    if config['type'] == 'gsp':
+        s_ = time()
+        gsp = GSP(dataset=dataset,
+                  log_level=config['gsp']['log_level'],
+                  output_file=output_path)
+        gsp.search(support_norm=config['gsp']['min_supp_norm'])
 
-    gsp = GSP(dataset=dataset,
-              log_level=config['gsp']['log_level'],
-              output_file=output_path)
-    gsp.search(support_norm=config['gsp']['min_supp_norm'])
+        stop_ = time()
+        tot_time = stop_ - s_
+        print(tot_time)
 
-    stop_ = time()
-    tot_time = stop_ - s_
-    print(tot_time)
+    elif config['type'] == 'spade':
+        s_ = time()
+
+        spd = SPADE(dataset)
+        df = spd.read_dataset()
+        support_results = spd.spade(df, config['spade']['min_supp_norm'])
+
+        stop_ = time()
+        tot_time = stop_ - s_
+        print(tot_time)
+
+        support_results.to_csv(os.path.join(output_path, 'spade_output.csv'))
+
+    else:
+        print(f"UNKNOWN ALGORITHM: {config['type']}")
+        exit(15)
 
     # save time for this task
     with open(os.path.join(output_path, 'results.json'), 'w') as f:
