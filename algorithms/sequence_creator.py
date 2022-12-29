@@ -11,6 +11,7 @@ def main(main_path, outfile):
         dfs.append(tmp_df)
 
     df = pd.concat(dfs)
+    print(df.shape)
     dd = defaultdict(lambda: list())
 
     for record in df[['text', 'time_window']].to_records():
@@ -25,4 +26,4 @@ def main(main_path, outfile):
 
 
 if __name__ == "__main__":
-    main(main_path="/dataset", outfile="sequences.json")
+    main(main_path="../dataset", outfile="sequences.json")

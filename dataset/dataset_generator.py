@@ -6,18 +6,13 @@ import re
 import tweepy
 import yaml
 import nltk
+import os
 
 nltk.download('stopwords')
 nltk.download('punkt')
 
 
-def main(configfile_path, time_window_width):
-    """
-
-    :param configfile_path:
-    :param time_window_width:
-    :return:
-    """
+def main(configfile_path, output_folder, query, time_window_width):
 
     with open(configfile_path) as f:
         access_dict = yaml.safe_load(f)
@@ -51,15 +46,16 @@ def main(configfile_path, time_window_width):
 
     # time windows that indicates start and end time of tweet creation time for each query
     # List of lists: [[start_time1, end_time1], [start_time2, end_time2], ...]
-    time_windows = [['2022-12-04T12:00:00.000Z', '2022-12-04T23:59:59.000Z'],
-                    ['2022-12-05T00:00:00.000Z', '2022-12-05T23:59:59.000Z'],
-                    ['2022-12-06T00:00:00.000Z', '2022-12-06T23:59:59.000Z'],
-                    ['2022-12-07T00:00:00.000Z', '2022-12-07T23:59:59.000Z'],
-                    ['2022-12-08T00:00:00.000Z', '2022-12-08T23:59:59.000Z'],
-                    ['2022-12-09T00:00:00.000Z', '2022-12-09T23:59:59.000Z'],
-                    ['2022-12-10T00:00:00.000Z', '2022-12-10T23:59:59.000Z']]
+    time_windows = [['2022-12-22T16:00:00.000Z', '2022-12-22T23:59:59.000Z'],
+                    ['2022-12-23T00:00:00.000Z', '2022-12-23T23:59:59.000Z'],
+                    ['2022-12-24T00:00:00.000Z', '2022-12-24T23:59:59.000Z'],
+                    ['2022-12-25T00:00:00.000Z', '2022-12-25T23:59:59.000Z'],
+                    ['2022-12-26T00:00:00.000Z', '2022-12-26T23:59:59.000Z'],
+                    ['2022-12-27T00:00:00.000Z', '2022-12-27T23:59:59.000Z'],
+                    ['2022-12-28T00:00:00.000Z', '2022-12-28T23:59:59.000Z'],
+                    ['2022-12-29T00:00:00.000Z', '2022-12-29T11:59:59.000Z']]
 
-    query = '#twitter #elonmusk lang:en -is:retweet'
+
     for start_time, end_time in tqdm(time_windows):
         tweets = tweepy.Paginator(v2_client.search_recent_tweets,
                                   query=query,
@@ -87,14 +83,15 @@ def main(configfile_path, time_window_width):
         df['timestamp'] = pd.to_datetime(df['created_at']).dt.tz_localize(None)
         df['dec_hour'] = df['timestamp'].apply(lambda x: x.day * 24 + x.hour)
         df['time_window'] = df['dec_hour'] // time_window_width
+        df = df.astype({'time_window': 'int32'})
 
         df = df[['author_id', 'created_at', 'id', 'text', 'org', 'time_window']]
 
-        df_file = f"musk_twitter_{start_time.split('T')[0]}.csv"
+        df_file = f"{output_folder}/S-300_{start_time.split('T')[0]}.csv"
         df.to_csv(df_file, index=False)
 
         print(f"Saved {df_file}")
 
 
 if __name__ == '__main__':
-    main("access_config.yaml", time_window_width=6)
+    main("access_config.yaml", output_folder='s-300', query='S-300 lang:en -is:retweet', time_window_width=0.25)
