@@ -93,6 +93,7 @@ def tokenize(dataset):
 
 def main():
     file_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+    total_memory = None
 
     with open(os.path.join(file_path, 'config.yaml')) as f:
         config = yaml.safe_load(f)
@@ -125,36 +126,42 @@ def main():
         yaml.dump(config, outfile, default_flow_style=False)
 
     if config['type'] == 'gsp':
-        tracemalloc.start()
+        if config['output']['with_profile']:
+            tracemalloc.start()
+
         s_ = time()
         gsp = GSP(dataset=dataset,
                   log_level=config['gsp']['log_level'],
                   output_file=output_path)
         gsp.search(support_norm=config['gsp']['min_supp_norm'])
 
-        total_memory = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
+        if config['output']['with_profile']:
+            total_memory = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
         stop_ = time()
         tot_time = stop_ - s_
         print(tot_time)
 
     elif config['type'] == 'prefixspan':
-        tracemalloc.start()
+        if config['output']['with_profile']:
+            tracemalloc.start()
+
         s_ = time()
         model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'], maxPatternLength=config['prefixspan']['maxlength'])
         result = model.freqSequences().collect()
-        with open(os.path.join(output_path, 'output.txt'), 'w') as f:
-            for fs in result:
-                # print('{}, {}'.format(fs.sequence, fs.freq))
-                f.write('{}, {} \n'.format(fs.sequence, fs.freq))
-
-        total_memory = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
 
         stop_ = time()
         tot_time = stop_ - s_
         print(tot_time)
+
+        if config['output']['with_profile']:
+            total_memory = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+
+        with open(os.path.join(output_path, 'output.txt'), 'w') as f:
+            for fs in result:
+                f.write('{}, {} \n'.format(fs.sequence, fs.freq))
 
     else:
         print(f"UNKNOWN ALGORITHM: {config['type']}")
