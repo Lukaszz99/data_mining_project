@@ -7,6 +7,7 @@ import sys
 from typing import List
 from statistics import median
 from time import time
+import tracemalloc
 
 
 def load_dataset(file_path, config) -> List[List[List[str]]]:
@@ -124,25 +125,32 @@ def main():
         yaml.dump(config, outfile, default_flow_style=False)
 
     if config['type'] == 'gsp':
+        tracemalloc.start()
         s_ = time()
         gsp = GSP(dataset=dataset,
                   log_level=config['gsp']['log_level'],
                   output_file=output_path)
         gsp.search(support_norm=config['gsp']['min_supp_norm'])
 
+        total_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
         stop_ = time()
         tot_time = stop_ - s_
         print(tot_time)
 
     elif config['type'] == 'prefixspan':
+        tracemalloc.start()
         s_ = time()
-
         model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'], maxPatternLength=config['prefixspan']['maxlength'])
         result = model.freqSequences().collect()
         with open(os.path.join(output_path, 'output.txt'), 'w') as f:
             for fs in result:
                 # print('{}, {}'.format(fs.sequence, fs.freq))
                 f.write('{}, {} \n'.format(fs.sequence, fs.freq))
+
+        total_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
 
         stop_ = time()
         tot_time = stop_ - s_
@@ -156,7 +164,8 @@ def main():
     with open(os.path.join(output_path, 'results.json'), 'w') as f:
         data = {
             'tot_items': tot_items,
-            'time': tot_time
+            'time': tot_time,
+            'total_memory': total_memory
         }
         json.dump(data, f, indent=4, sort_keys=False)
 
