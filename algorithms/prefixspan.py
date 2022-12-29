@@ -1,12 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# author: Tianming Lu
-# adapted by: Nicolas Rangeon
-from typing import List
-import os
-import json
-from pprint import pprint
-
 class PrefixSpan:
 
     def __init__(self, sequences, minSupport=0.1, maxPatternLength=10):
@@ -178,40 +169,3 @@ class PrefixSpan:
                 p_S.append(p_s)
 
         return p_S
-
-def load_dataset(file_path, config) -> List[List[List[str]]]:
-    dataset_path = os.path.join(file_path, config['dataset']['path'])
-
-    with open(dataset_path) as f:
-        dataset = json.load(f)
-
-    return dataset
-
-def clean_dataset(dataset):
-    new_dataset = list()
-
-    for s in dataset:
-        new_seq = list()
-        for transaction in s:
-            new_transaction = list()
-            for i in transaction:
-                if i != 'elonmusk' and i != 'twitter' and i != 'co' and i != 'elon' and i != 'musk' and i != 'https' and len(i) > 2 and i != 'twitterfil':
-                    new_transaction.append(i)
-            new_seq.append(new_transaction)
-        new_dataset.append(new_seq)
-
-    return new_dataset
-
-def prepare_dataset(dataset, max_seq, max_transactions, max_items):
-    dataset = dataset[:max_seq]
-    dataset = [s[:max_transactions] for s in dataset]
-
-    new_dataset = list()
-
-    for s in dataset:
-        new_transaction = list()
-        for transaction in s:
-            new_transaction.append(transaction[:max_items])
-        new_dataset.append(new_transaction)
-
-    return new_dataset
