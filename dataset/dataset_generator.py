@@ -55,7 +55,6 @@ def main(configfile_path, output_folder, query, time_window_width):
                     ['2022-12-28T00:00:00.000Z', '2022-12-28T23:59:59.000Z'],
                     ['2022-12-29T00:00:00.000Z', '2022-12-29T11:59:59.000Z']]
 
-
     for start_time, end_time in tqdm(time_windows):
         tweets = tweepy.Paginator(v2_client.search_recent_tweets,
                                   query=query,
@@ -81,17 +80,17 @@ def main(configfile_path, output_folder, query, time_window_width):
         df['org'] = df['text']
         df['text'] = df['text'].apply(lambda x: clean_text(x, st, stop_words))
         df['timestamp'] = pd.to_datetime(df['created_at']).dt.tz_localize(None)
-        df['dec_hour'] = df['timestamp'].apply(lambda x: x.day * 24 + x.hour)
-        df['time_window'] = df['dec_hour'] // time_window_width
+        df['dec_minute'] = df['timestamp'].apply(lambda x: x.day * 1440 + x.hour * 60 + x.minute)
+        df['time_window'] = df['dec_minute'] // time_window_width
         df = df.astype({'time_window': 'int32'})
 
         df = df[['author_id', 'created_at', 'id', 'text', 'org', 'time_window']]
 
-        df_file = f"{output_folder}/S-300_{start_time.split('T')[0]}.csv"
+        df_file = f"musk_{start_time.split('T')[0]}.csv"
         df.to_csv(df_file, index=False)
 
         print(f"Saved {df_file}")
 
 
 if __name__ == '__main__':
-    main("access_config.yaml", output_folder='s-300', query='S-300 lang:en -is:retweet', time_window_width=0.25)
+    main("access_config.yaml", query='#elonmusk lang:en -is:retweet', time_window_width=5, output_folder='')

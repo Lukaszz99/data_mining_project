@@ -111,6 +111,9 @@ def main():
     elif os.path.exists(output_path):
         print('UWAGA, FOLDER ISTNIEJE, JEŻELI CHCESZ KONTYNUOWAĆ KLIKNIJ 1')
         if int(input()) == 1:
+            onlyfiles = [f for f in os.listdir(output_path) if os.path.isfile(os.path.join(output_path, f))]
+            for f in onlyfiles:
+                os.remove(os.path.join(output_path, f))
             pass
         else:
             exit(15)
