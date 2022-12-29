@@ -107,74 +107,85 @@ def main():
 
     # dataset, token_dict = tokenize(dataset)
 
-    # create directory for output files
-    output_path = os.path.join(file_path, config['output']['out_directory'])
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-    elif os.path.exists(output_path):
-        print('UWAGA, FOLDER ISTNIEJE, JEŻELI CHCESZ KONTYNUOWAĆ KLIKNIJ 1')
-        if int(input()) == 1:
-            onlyfiles = [f for f in os.listdir(output_path) if os.path.isfile(os.path.join(output_path, f))]
-            for f in onlyfiles:
-                os.remove(os.path.join(output_path, f))
-            pass
+    type_ = config['type']
+    if type_ != 'both':
+        type_ = [type_]
+    else:
+        type_ = ['gsp', 'prefixspan']
+
+    for t in type_:
+        # change from both to current type in config yaml
+        config['type'] = t
+
+        # create directory for output files
+        output_path = os.path.join(file_path, config['output']['out_directory'], t)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        elif os.path.exists(output_path):
+            print('UWAGA, FOLDER ISTNIEJE, JEŻELI CHCESZ KONTYNUOWAĆ KLIKNIJ 1')
+            if int(input()) == 1:
+                onlyfiles = [f for f in os.listdir(output_path) if os.path.isfile(os.path.join(output_path, f))]
+                for f in onlyfiles:
+                    os.remove(os.path.join(output_path, f))
+                pass
+            else:
+                exit(15)
+
+        # save config dict do output path
+        with open(os.path.join(output_path, 'config.yaml'), 'w') as outfile:
+            yaml.dump(config, outfile, default_flow_style=False)
+
+        if t == 'gsp':
+            if config['output']['with_profile']:
+                tracemalloc.start()
+
+            s_ = time()
+            gsp = GSP(dataset=dataset,
+                      log_level=config['gsp']['log_level'],
+                      output_file=output_path)
+            gsp.search(support_norm=config['gsp']['min_supp_norm'])
+
+            if config['output']['with_profile']:
+                total_memory = tracemalloc.get_traced_memory()
+                tracemalloc.stop()
+
+            stop_ = time()
+            tot_time = stop_ - s_
+            print(tot_time)
+
+        elif t == 'prefixspan':
+            if config['output']['with_profile']:
+                tracemalloc.start()
+
+            s_ = time()
+            model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'],
+                                     maxPatternLength=config['prefixspan']['maxlength'])
+            result = model.freqSequences().collect()
+
+            stop_ = time()
+            tot_time = stop_ - s_
+            print(tot_time)
+
+            if config['output']['with_profile']:
+                total_memory = tracemalloc.get_traced_memory()
+                tracemalloc.stop()
+
+            with open(os.path.join(output_path, 'output.txt'), 'w') as f:
+                for fs in result:
+                    f.write('{}, {} \n'.format(fs.sequence, fs.freq))
+
         else:
+            print(f"UNKNOWN ALGORITHM: {config['type']}")
             exit(15)
 
-    # save config dict do output path
-    with open(os.path.join(output_path, 'config.yaml'), 'w') as outfile:
-        yaml.dump(config, outfile, default_flow_style=False)
-
-    if config['type'] == 'gsp':
-        if config['output']['with_profile']:
-            tracemalloc.start()
-
-        s_ = time()
-        gsp = GSP(dataset=dataset,
-                  log_level=config['gsp']['log_level'],
-                  output_file=output_path)
-        gsp.search(support_norm=config['gsp']['min_supp_norm'])
-
-        if config['output']['with_profile']:
-            total_memory = tracemalloc.get_traced_memory()
-            tracemalloc.stop()
-
-        stop_ = time()
-        tot_time = stop_ - s_
-        print(tot_time)
-
-    elif config['type'] == 'prefixspan':
-        if config['output']['with_profile']:
-            tracemalloc.start()
-
-        s_ = time()
-        model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'], maxPatternLength=config['prefixspan']['maxlength'])
-        result = model.freqSequences().collect()
-
-        stop_ = time()
-        tot_time = stop_ - s_
-        print(tot_time)
-
-        if config['output']['with_profile']:
-            total_memory = tracemalloc.get_traced_memory()
-            tracemalloc.stop()
-
-        with open(os.path.join(output_path, 'output.txt'), 'w') as f:
-            for fs in result:
-                f.write('{}, {} \n'.format(fs.sequence, fs.freq))
-
-    else:
-        print(f"UNKNOWN ALGORITHM: {config['type']}")
-        exit(15)
-
-    # save time for this task
-    with open(os.path.join(output_path, 'results.json'), 'w') as f:
-        data = {
-            'tot_items': tot_items,
-            'time': tot_time,
-            'total_memory': total_memory
-        }
-        json.dump(data, f, indent=4, sort_keys=False)
+        # save time for this task
+        with open(os.path.join(output_path, 'results.json'), 'w') as f:
+            data = {
+                'tot_items': tot_items,
+                'time': tot_time,
+                'total_memory': total_memory
+            }
+            json.dump(data, f, indent=4, sort_keys=False)
 
 
 if __name__ == "__main__":

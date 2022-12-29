@@ -1,6 +1,6 @@
 dataset:
   path: "dataset/sequences.json"
-  max_seq: 50
+  max_seq: 1000
   max_transactions: 20
   max_items: 100
 
@@ -9,13 +9,13 @@ gsp:
   log_level: 1
 
 prefixspan:
-    min_supp_norm: 0.4
-    maxlength: 2
+    min_supp_norm: 0.12
+    maxlength: 7
 
-#type: 'gsp'
+# 'gsp' or 'prefixspan' or 'both
 type: 'prefixspan'
 
 output:
   # True or False
   with_profile: True
-  out_directory: "output/gsp_memory_500_03"
+  out_directory: "output/prefixspan_1000_012"
