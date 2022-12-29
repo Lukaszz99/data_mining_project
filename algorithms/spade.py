@@ -17,7 +17,7 @@ class SPADE:
                 -1 separates elements
                 -2 separates sequences
                 Item can contain one or more items"""
-        sid = 0
+        # sid = 0
         data = []
 
         for seq in self._dataset:
@@ -25,7 +25,7 @@ class SPADE:
             for s in seq:
                 eid = seq.index(s)
                 for item in s:
-                    data.append([sid, eid, repr(set(item))])
+                    data.append([sid, eid, repr(set([(item)]))])
 
         return pd.DataFrame(data, columns=['SID', 'EID', 'Items'])
 

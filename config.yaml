@@ -1,6 +1,6 @@
 dataset:
   path: "dataset/sequences.json"
-  max_seq: 1500
+  max_seq: 2000
   max_transactions: 20
   max_items: 100
 
@@ -8,11 +8,12 @@ gsp:
   min_supp_norm: 0.4
   log_level: 1
 
-spade:
-    min_supp_norm: 0.4
+prefixspan:
+    min_supp_norm: 0.12
+    maxlength: 7
 
-type: 'gsp'
-#type: 'spade'
+#type: 'gsp'
+type: 'prefixspan'
 
 output:
-  out_directory: "output/run34"
+  out_directory: "output/prefixspan_test"

@@ -1,7 +1,7 @@
 import json
 import yaml
 from algorithms.gsp import GSP
-from algorithms.spade import SPADE
+from algorithms.prefixspan import PrefixSpan
 import os
 import sys
 from typing import List
@@ -134,18 +134,19 @@ def main():
         tot_time = stop_ - s_
         print(tot_time)
 
-    elif config['type'] == 'spade':
+    elif config['type'] == 'prefixspan':
         s_ = time()
 
-        spd = SPADE(dataset)
-        df = spd.read_dataset()
-        support_results = spd.spade(df, config['spade']['min_supp_norm'])
+        model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'], maxPatternLength=config['prefixspan']['maxlength'])
+        result = model.freqSequences().collect()
+        with open(os.path.join(output_path, 'output.txt'), 'w') as f:
+            for fs in result:
+                # print('{}, {}'.format(fs.sequence, fs.freq))
+                f.write('{}, {} \n'.format(fs.sequence, fs.freq))
 
         stop_ = time()
         tot_time = stop_ - s_
         print(tot_time)
-
-        support_results.to_csv(os.path.join(output_path, 'spade_output.csv'))
 
     else:
         print(f"UNKNOWN ALGORITHM: {config['type']}")
