@@ -30,7 +30,6 @@ class GSP:
             print('Result for lvl 1: Done')
             with open(f"{self._out}/lvl1.json", 'w') as f:
                 json.dump(patterns[0], f, sort_keys=False, indent=4)
-            # print('Result, lvl 1: ' + str(patterns[0]))
 
         k = 1
         while patterns[k - 1]:

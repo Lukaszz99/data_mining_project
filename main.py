@@ -158,9 +158,9 @@ def main():
                 tracemalloc.start()
 
             s_ = time()
-            model = PrefixSpan.train(dataset, minSupport=config['prefixspan']['min_supp_norm'],
-                                     maxPatternLength=config['prefixspan']['maxlength'])
-            result = model.freqSequences().collect()
+            model = PrefixSpan.train(dataset, min_supp=config['prefixspan']['min_supp_norm'],
+                                     max_pattern_length=config['prefixspan']['maxlength'])
+            result = model.get_freq_seq().collect()
 
             stop_ = time()
             tot_time = stop_ - s_
